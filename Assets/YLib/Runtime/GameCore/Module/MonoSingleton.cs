@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace YLib.GameCore
+namespace Y.GameCore
 {
     public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
