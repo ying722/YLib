@@ -54,6 +54,48 @@ namespace YLib.GoogleSheet
             EditorWebRequest.Request(url);
         }
 
+        
+        public static void LoadCSV(string url, Action<string> complete)
+        {
+            LoadJson(url, complete => 
+            {
+                string csvContent = ConvertJsonToCsv(complete);
+                Debug.Log($"CSV Content: {csvContent}");
+            });
+        }
+
+        private string ConvertJsonToCsv(string json)
+        {
+            // 解析 JSON
+            LocalizationEntry[] entries = JsonUtility.FromJson<Wrapper>($"{{\"entries\":{json}}}").entries;
+
+            // 建立 CSV 標頭
+            StringBuilder csvBuilder = new StringBuilder();
+            csvBuilder.AppendLine("Key,English,Chinese (Taiwan),Chinese (Simplified),Japanese,Korean");
+
+            // 填入數據
+            foreach (var entry in entries)
+            {
+                csvBuilder.AppendLine(
+                    $"{EscapeCsvField(entry.Key)},{EscapeCsvField(entry.English)},{EscapeCsvField(entry.Chinese_Taiwan)},{EscapeCsvField(entry.Chinese_Simplified)},{EscapeCsvField(entry.Japanese)},{EscapeCsvField(entry.Korean)}"
+                );
+            }
+
+            return csvBuilder.ToString();
+        }
+
+        private string EscapeCsvField(string field)
+        {
+            if (string.IsNullOrEmpty(field))
+                return ""; // 空值處理
+
+            // 如果字段中包含逗號或換行符，需要用雙引號括起來
+            if (field.Contains(",") || field.Contains("\n"))
+                field = $"\"{field.Replace("\"", "\"\"")}\""; // 替換雙引號為雙雙引號
+
+            return field;
+        }
+
     #endregion
     }
 }
