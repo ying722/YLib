@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Text;
 using System.IO;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 #endregion
 
 namespace YLib.GoogleSheet
