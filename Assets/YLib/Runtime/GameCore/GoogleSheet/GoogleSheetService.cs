@@ -62,7 +62,7 @@ namespace YLib.GoogleSheet
         
         public static void LoadCSV(string url, Action<string> complete)
         {
-            LoadJson(url, delegate (string complete)
+            LoadJson(url, delegate (string jsonResult)
             {
                 try
                 {
@@ -71,7 +71,7 @@ namespace YLib.GoogleSheet
                 }
                 catch (Exception)
                 {
-                    Debug.LogError("Error converting JSON to CSV: " + ex.Message);
+                    Debug.LogError("Error converting JSON to CSV");
                     throw;
                 }
             });
