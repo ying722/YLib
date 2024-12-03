@@ -64,7 +64,7 @@ namespace YLib.GoogleSheet
             });
         }
 
-        private string ConvertJsonToCsv(string json)
+        private static string ConvertJsonToCsv(string json)
         {
             // 解析 JSON
             LocalizationEntry[] entries = JsonUtility.FromJson<Wrapper>($"{{\"entries\":{json}}}").entries;
@@ -84,7 +84,7 @@ namespace YLib.GoogleSheet
             return csvBuilder.ToString();
         }
 
-        private string EscapeCsvField(string field)
+        private static string EscapeCsvField(string field)
         {
             if (string.IsNullOrEmpty(field))
                 return ""; // 空值處理
