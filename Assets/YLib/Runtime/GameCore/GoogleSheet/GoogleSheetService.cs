@@ -5,6 +5,7 @@ using ThirdParty.Utilities;
 using UnityEngine;
 using System.Text;
 using System.IO;
+using Newtonsoft.Json;
 #endregion
 
 namespace YLib.GoogleSheet
@@ -69,19 +70,33 @@ namespace YLib.GoogleSheet
 
         private static string ConvertJsonToCsv(string json)
         {
-            // 解析 JSON
-            LocalizationEntry[] entries = JsonUtility.FromJson<Wrapper>($"{{\"entries\":{json}}}").entries;
+            // 使用字典列表解析 JSON
+            var entries = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(json);
+
+            // 動態獲取所有的鍵（包含所有語言和 Key）
+            HashSet<string> allKeys = new HashSet<string>();
+            foreach (var entry in entries)
+            {
+                foreach (var key in entry.Keys)
+                {
+                    allKeys.Add(key);
+                }
+            }
 
             // 建立 CSV 標頭
             StringBuilder csvBuilder = new StringBuilder();
-            csvBuilder.AppendLine("Key,English,Chinese (Taiwan),Chinese (Simplified),Japanese,Korean");
+            csvBuilder.AppendLine(string.Join(",", allKeys));
 
             // 填入數據
             foreach (var entry in entries)
             {
-                csvBuilder.AppendLine(
-                    $"{EscapeCsvField(entry.Key)},{EscapeCsvField(entry.English)},{EscapeCsvField(entry.Chinese_Taiwan)},{EscapeCsvField(entry.Chinese_Simplified)},{EscapeCsvField(entry.Japanese)},{EscapeCsvField(entry.Korean)}"
-                );
+                List<string> row = new List<string>();
+                foreach (var key in allKeys)
+                {
+                    entry.TryGetValue(key, out string value);
+                    row.Add(EscapeCsvField(value));
+                }
+                csvBuilder.AppendLine(string.Join(",", row));
             }
 
             return csvBuilder.ToString();
