@@ -4,7 +4,13 @@ using UnityEngine;
 
 namespace YLib.GameCore
 {
-    public abstract class BaseManager<T> : MonoSingleton<T> where T : BaseManager<T>
+    public interface IBaseManager
+    {
+        void Init();
+        void Release();
+    }
+
+    public abstract class BaseManager<T> : MonoSingleton<T>,IBaseManager where T : BaseManager<T>
     {
         public abstract void Init();
         public abstract void Release();
