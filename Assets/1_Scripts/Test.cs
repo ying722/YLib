@@ -19,7 +19,7 @@ public class Test : MonoBehaviour
     [Button]
     public async void Spawn()
     {
-        GameObject obj = await resourceModule.Spawn("TestPrefab");
+        GameObject obj = await resourceModule.Spawn<GameObject>("TestPrefab");
         // obj.transform.position = Vector3.zero;
         obj.transform.SetParent(transform,false);
         usingPrefab.Add(obj);

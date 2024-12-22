@@ -34,11 +34,33 @@ namespace YLib.GameCore
             }
         }
 
-        public async Task<GameObject> Spawn(string address)
+        public async Task<T> Spawn<T>(string address) where T : Object
         {
             GameObject obj = await GetResource<GameObject>(address);
+
+            if (obj == null)
+            {
+                Debug.LogError($"Failed to load resource: {address}");
+                return null;
+            }
+
+            // 從池中生成物件
+            GameObject spawnedObj = GameobjectPool.Spawn(address, obj);
+            if (spawnedObj == null)
+            {
+                Debug.LogError($"Failed to spawn object from pool: {address}");
+                return null;
+            }
+
+            // 檢查是否包含 T 類型的組件
+            T component = spawnedObj.GetComponent<T>();
+            if (component == null)
+            {
+                Debug.LogError($"Spawned object does not contain component of type {typeof(T)}: {address}");
+                return null;
+            }
             
-            return GameobjectPool.Spawn(address,obj);
+            return component;
         }
 
         public async Task DeSpawn(GameObject obj)
